@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title>E3</title>
+    	<link rel="stylesheet" type="text/css" href="css/mui.min.css"/>
+    	<link rel="stylesheet" type="text/css" href="css/iconfont.css"/>
+    	
+    	<style type="text/css">
+    		.mui-icon-left-nav,
+    		.mui-bar-nav h1,
+    		.mui-pull-right {
+    			color: gray;
+    		}
+    		.mui-content {
+    			font-size: 0.8em;
+    			color: gray;
+    			text-align: center;
+    		}
+    	</style>
+</head>
+<body>
+	<header class="mui-bar mui-bar-nav">
+		<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+		<h1 class="mui-title">模版界面</h1>
+		<!--<h1 class="mui-title" >
+			<input type="text" placeholder="222" style="height: 30px;"/>
+		</h1>-->
+		<a id="rightBar" class="mui-icon mui-icon-personadd mui-pull-right"></a>
+	</header>
+	
+	<div class="mui-content">
+		<div style="margin-top: 70px;">
+			<a>
+				<span ><img src="img/jump.gif" style="max-width:2em; height:auto;"/></span>
+			</a>
+			<br />
+			<span>加载中...</span>
+		</div>
+	</div>
+	
+	<script src="js/mui.min.js" charset="UTF-8"></script>
+	<script type="text/javascript" charset="UTF-8">
+		mui.init({
+			swipeBack:true
+		});
+		
+		var contentWebview = null; var self = null;
+		var title;
+		var rightBar;
+		var categoryID;//某些特殊的页面需要
+		mui.plusReady(function(){
+			
+			
+			//获取dom节点
+			self = plus.webview.currentWebview();
+			title = document.querySelector('.mui-title');
+			rightBar = document.getElementById('rightBar');
+			
+			
+			//为rightbars添加事件
+			rightBar.addEventListener('tap',function(){
+				if (contentWebview == null) {
+					contentWebview = self.children()[0];
+				}
+				mui.fire(contentWebview,'pressRightBar',{
+					
+				});
+			},false);
+			
+			//接收templateFire事件
+			window.addEventListener('templateFire',function(options){
+				title.innerText = options.detail.title;
+				var id = options.detail.id;
+				var aniShow = options.detail.aniShow;
+				var href = options.detail.target;
+				var isBars = options.detail.isBars;
+				var barsIcon = options.detail.barsIcon;
+				categoryID = options.detail.categoryID;
+				
+				console.log(title.innerText +aniShow +href +isBars + barsIcon);
+				
+				if (isBars) {
+					rightBar.style.display = 'inline';
+					rightBar.className = barsIcon + ' mui-pull-right';
+					
+				}else {
+					rightBar.style.display = 'none';
+				}
+				if (mui.os.android&&aniShow&&parseFloat(mui.os.version)>=4.4) {
+					if (contentWebview == null) {
+						contentWebview = self.children()[0];
+					}
+					
+					var str = contentWebview.getURL();
+					var index = str.indexOf('www/');
+					str = str.substring(index+4);
+					if ((!~id.indexOf('category-detail') && !~id.indexOf('goods-detail') )&&(contentWebview.getURL() == href || str == href)) {
+						console.log("loaded");
+						contentWebview.show();
+					}else {
+						console.log("new load");
+						contentWebview.loadURL(href);
+					}
+					self.show(aniShow);
+				}
+			},false);
+			
+			//接收子页面的获取categoryID的事件
+			window.addEventListener('getCategoryID',function(e){
+				console.log('收到获取productID的事件');
+				if (contentWebview == null) {
+					contentWebview = self.children()[0];
+				}
+				mui.fire(contentWebview,'postCategoryID',{
+					categoryID:categoryID
+				});
+			},false);
+		});
+	</script>
+	
+</body>
+</html>

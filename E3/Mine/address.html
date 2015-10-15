@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title>E3</title>
+    
+    <link rel="stylesheet" type="text/css" href="../css/mui.min.css"/>
+    <link rel="stylesheet" type="text/css" href="../css/own.css"/>
+    <link rel="stylesheet" type="text/css" href="../css/iconfont.css"/>
+    <link rel="stylesheet" type="text/css" href="../css/mui.picker.min.css"/>
+    
+    <style type="text/css">
+    		.mui-input-row label {
+    			width: 100%;
+    		}
+    </style>
+</head>
+<body>
+	<header class="mui-bar mui-bar-nav">
+		<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left own-left-nav-color"></a>
+		<h1 class="mui-title own-left-nav-color">地址</h1>
+		<a class="mui-icon iconfont icon-iconfont53 mui-pull-right own-left-nav-color"></a>
+	</header>
+	
+	<div class="mui-content" >
+		<form class="mui-input-group">
+			<div class="mui-input-row">
+				<input type="text" class="mui-input-clear" placeholder="收货人姓名" />
+			</div>
+			<div class="mui-input-row">
+				<input type="text" class="mui-input-clear" placeholder="手机号码" />
+			</div>
+			<div class="mui-input-row" id="addressPicker">
+				<label>省、市、区</label>
+			</div>
+			<div class="mui-input-row" style="height: 4em; padding-top: 2px;">
+				<textarea placeholder="详细地址"></textarea>
+			</div>
+		</form>
+	</div>
+
+	<script src="../js/mui.min.js" charset="UTF-8"></script>
+	<script src="../js/city.data-3.js" charset="UTF-8"></script>
+	<script src="../js/mui.picker.min.js" charset="UTF-8"></script>
+	<script src="../js/own.js" charset="UTF-8"></script>
+	<script type="text/javascript" charset="UTF-8">
+		mui.init({
+			swipeBack:true
+		});
+		
+		var addressPicker;
+		var pickerlabel;
+		mui.plusReady(function(){
+			addressPicker = document.getElementById('addressPicker');
+			pickerlabel = addressPicker.children[0];
+			
+			
+//			var cityPicker3 = new $.PopPicker({
+//						layer: 3
+//					});
+//					cityPicker3.setData(cityData3);
+//					var showCityPickerButton = doc.getElementById('showCityPicker3');
+//					var cityResult3 = doc.getElementById('cityResult3');
+//					showCityPickerButton.addEventListener('tap', function(event) {
+//						cityPicker3.show(function(items) {
+//							cityResult3.innerText = "你选择的城市是:" + (items[0] || {}).text + " " + (items[1] || {}).text + " " + (items[2] || {}).text;
+//							//返回 false 可以阻止选择框的关闭
+//							//return false;
+//						});
+//					}, false);
+			
+			//监听呼出picker事件
+			addressPicker.addEventListener('tap',function(){
+				var cityPicker3 = new mui.PopPicker({
+					layer:3
+				});
+				cityPicker3.setData(cityData3);
+				cityPicker3.show(function(items){
+					pickerlabel.innerText = (items[0] || {}).text + " " + (items[1] || {}).text + " " + (items[2] || {}).text;
+				});
+			
+				
+			},false);
+		});
+	</script>
+	
+</body>
+</html>

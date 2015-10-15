@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title>E3 父子模版</title>
+    
+    <link rel="stylesheet" type="text/css" href="../css/mui.min.css"/>
+    <link rel="stylesheet" type="text/css" href="../css/own.css"/>
+    <link rel="stylesheet" type="text/css" href="../css/iconfont.css"/>
+	<style type="text/css">
+    		/*下面两项是重置muicss的输入框label和input之间的宽比率*/
+    		.mui-input-row label {
+    			width: 20%;
+    		}
+    		.mui-input-row label~input {
+    			width: 80%;
+    		}
+    </style>
+</head>
+<body>
+	
+	<header class="mui-bar mui-bar-nav own-header-hidden">
+		<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+		<h1 class="mui-title">注册</h1>
+	</header>
+	
+	<div class="mui-content own-content-padding">
+		<div class="mui-card" style="margin-top: 30px;">
+			<form class="mui-input-group">
+				<div class="mui-input-row">
+					<label><span class="mui-icon iconfont icon-zhanghao"></span></label>
+					<input id="account" class="mui-input-clear" type="text" placeholder="输入手机或则邮箱" />
+				</div>
+			</form>
+		</div>
+		<div class="mui-button-row" style="margin: 10px 15px;">
+			<button type="button" class="mui-btn mui-btn-block own-btn-green" style="padding: 5px 0px;">提交</button>
+		</div>
+	</div>
+	<script src="../js/mui.min.js" charset="UTF-8"></script>
+	<script src="../js/own.js" charset="UTF-8"></script>
+	<script type="text/javascript" charset="UTF-8">
+		mui.init({
+			swipeBack:true
+		});
+		
+		var uploadBtn;
+		var account;
+		mui.plusReady(function(){
+			account = document.querySelector('input[type="text"]');
+			uploadBtn = document.querySelector('button[type="button"]');
+			
+			uploadBtn.addEventListener('tap',function(){
+				if(account.value.length <= 0){
+					mui.toast('请输入账号');
+					return;
+				}
+				
+				//联网发送信息todo
+			},false);
+		});
+		
+	</script>
+</body>
+</html>

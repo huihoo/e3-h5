@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title>E3父子模版</title>
+    <link rel="stylesheet" type="text/css" href="../css/mui.min.css"/>
+    <link rel="stylesheet" type="text/css" href="../css/own.css"/>
+    <link rel="stylesheet" type="text/css" href="../css/iconfont.css"/>
+    
+    <style type="text/css">
+    		.emptyAddress {
+    			text-align: center;
+    			margin-top: 50px;
+    			font-size: 0.9em;
+    		}
+    		
+    		h5 {
+    			color: black
+    		}
+    		
+    		.name {
+    			float: left;
+    		}
+    		.number {
+    			float: right;
+    		}
+    		
+    		.address {
+    			padding-top: 2px;
+    			clear: both;
+    		}
+    		
+    		
+    </style>
+</head>
+<body>
+	<header class="mui-bar mui-bar-nav own-header-hidden">
+		<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left own-left-nav-color"></a>
+		<h1 class="mui-title">地址管理</h1>
+	</header>
+	
+	<div class="mui-content own-content-padding">
+		<div  class="emptyAddress own-left-nav-color">
+			<span>空空如也</span>
+			<br />
+			<span>先添加一个收货地址吧</span>
+			<br />
+			<button type="button" class="mui-btn">
+				<span class="mui-icon iconfont icon-tianjia" style="padding: 0px 5px; color: gray;"></span>
+			</button>
+		</div>
+		<ul id="addressList" class="mui-table-view">
+			<li class="mui-table-view-cell">
+				<h5 class="name">colin</h5>
+				<h5 class="number">15882017353</h5>
+				<p class="address mui-ellipsis-2">中国四川省成都市高新区大源村南华路双祥社区25号院n栋n单元n楼n号电梯n号门n栋n单元n楼n号电梯n号门</p>
+			</li>
+			<li class="mui-table-view-cell">
+				<h5 class="name">colin</h5>
+				<h5 class="number">15882017353</h5>
+				<p class="address mui-ellipsis-2">四川成都高新区</p>
+			</li>
+			<li class="mui-table-view-cell">
+				<h5 class="name">colin</h5>
+				<h5 class="number">15882017353</h5>
+				<p class="address mui-ellipsis-2">中国四川省成都市高新区大源村南华路双祥社区25号院n栋n单元n楼n号电梯n号门n栋n单元n楼n号电梯n号门</p>
+			</li>
+			<li class="mui-table-view-cell">
+				<h5 class="name">colin</h5>
+				<h5 class="number">15882017353</h5>
+				<p class="address mui-ellipsis-2">中国四川省成都市高新区大源村南华路双祥社区25号院n栋n单元n楼n号电梯n号门n栋n单元n楼n号电梯n号门</p>
+			</li>
+		</ul>
+		<div>
+			<img src="http://file.huihoo.com//images/products/SP-10014/large.jpg?t=1438324882998"  style="width: 100%;"/>
+		</div>
+	</div>
+	
+	<script src="../js/mui.min.js" charset="UTF-8"></script>
+	<script src="../js/own.js" charset="UTF-8"></script>
+	<script type="text/javascript" charset="UTF-8">
+		mui.init({
+			swipeBack:true
+		});
+		
+		
+		var addressWebview;
+		var emptyAddress;
+		var emptyAddressBtn;
+		mui.plusReady(function(){
+			emptyAddress = document.querySelector('.emptyAddress');
+			emptyAddressBtn = emptyAddress.querySelector('button');
+			
+			//将地址的页面初始化
+			addressWebview = mui.preload({
+				url:'address.html',
+				id:'address.html',
+				styles:{
+					top:'0px',
+					bottom:'0px'
+				}
+			});
+			
+			//在当前页面消失的时候close addresswebview
+			closeChildWebviewOfhide(plus.webview.currentWebview(),addressWebview.id);
+			
+			//判断如果没有可用地址就显示添加
+			if (true) {
+				emptyAddress.style.display = 'block';
+				emptyAddressBtn.addEventListener('tap',function(){
+					showaddressWeb();
+				},false);
+			}else {
+				emptyAddress.style.display = 'none';
+			}
+			
+			//地址修改点击事件
+			mui('.mui-table-view').on('tap','.mui-table-view-cell',function(){
+				var cell = this;
+				var name = this.children[0];
+				var phoneNum = this.children[1];
+				var address = this.children[2];
+				
+				showaddressWeb();
+			});
+			
+			//接收rightbar事件
+			window.addEventListener('pressRightBar',function(){
+				showaddressWeb();
+			},false);
+		});
+		
+		function showaddressWeb(){
+			var aniShow = getaniShow();
+			//第二次进来的时候不会进plusReady
+			if (!addressWebview.getURL() || !addressWebview) {
+				addressWebview = mui.preload({
+					url:'address.html',
+					id:'address.html',
+					styles:{
+						top:'0px',
+						bottom:'0px'
+					},
+				});
+				//作为添加地址的事件处理
+				addressWebview.addEventListener('loaded',function(){
+					addressWebview.show(aniShow);
+				},false);
+			}else {
+				//作为添加地址的事件处理
+				addressWebview.show(aniShow);
+			}
+		}
+	</script>
+	
+</body>
+</html>

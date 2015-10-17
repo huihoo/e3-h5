@@ -13,6 +13,7 @@
 * git clone https://github.com/huihoo/e3-h5
 * 将clone的包内容拖到HBuilder中，可运行调试
 * 打包.apk或.ipa直接部署到真机，只有几M大小 
+* 现在就下载安装[Android App](http://download.huihoo.com/huihoo/e3/e3-html5.apk)或[iOS App](http://download.huihoo.com/huihoo/e3/e3-html5.ipa)
 
 #### 技术特色
 * 预加载的使用，让页面的切换变的流畅，解决浏览器的天生白屏。

@@ -15,6 +15,8 @@
 * 打包.apk或.ipa直接部署到真机，只有几M大小 
 * 现在就下载安装[Android App](http://download.huihoo.com/huihoo/e3/e3-html5.apk)或[iOS App](http://download.huihoo.com/huihoo/e3/e3-html5.ipa)
 
+![发行App](http://wiki.huihoo.com/images/a/a7/Hbuilder-distribution-app.png)
+
 #### 技术特色
 * 预加载的使用，让页面的切换变的流畅，解决浏览器的天生白屏。
 * 父子模版解决页面拖动回弹的效果。

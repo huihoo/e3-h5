@@ -8,6 +8,11 @@
 
 [E3 HTML5 App @ Huihoo code](http://code.huihoo.com/mobile-development/e3_h5)
 
+#### 版本
+* 单机版：用于评估和测试 (2016.06-)
+* 服务器版：用于生产部署 (2016.07-)
+注：目前版本，因为缺少后端服务器支持，暂无法正常演示，仅供参考。
+
 #### 编译运行
 * [下载安装HBuilder](http://www.dcloud.io) 
 * git clone https://github.com/huihoo/e3-h5

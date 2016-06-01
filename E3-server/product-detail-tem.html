@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+	<title>模版界面</title>
+    <link rel="stylesheet" type="text/css" href="css/iconfont.css"/>
+    <link rel="stylesheet" type="text/css" href="css/mui.min.css"/>
+    <link rel="stylesheet" type="text/css" href="css/own.css"/>
+    		
+    <style type="text/css">
+    		.mui-icon-left-nav,
+    		.mui-bar-nav h1,
+    		.mui-pull-right {
+    			color: gray;
+    		}
+    		.mui-content {
+    			font-size: 0.8em;
+    			color: gray;
+    			text-align: center;
+    		}
+    </style>
+</head>
+<body>
+	
+	<header class="mui-bar mui-bar-nav">
+		<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+		<h1 class="mui-title">商品详情</h1>
+	</header>
+	
+	
+	<div class="mui-content">
+		<div style="margin-top: 70px;">
+			<a>
+				<span ><img src="img/jump.gif" style="max-width:2em; height:auto;"/></span>
+			</a>
+			<br />
+			<span>加载中...</span>
+		</div>
+	</div>
+	
+	<script src="js/ajax.js" charset="UTF-8"></script>
+	<script src="js/mui.min.js" charset="UTF-8"></script>
+	<script src="js/own.js" charset="UTF-8"></script>
+	<script type="text/javascript" charset="UTF-8">
+		mui.init({
+			swipeBack:true
+		});
+		
+		var detailsub;
+		var self;
+		var product_id;
+		mui.plusReady(function(){
+			self = plus.webview.currentWebview();
+			detailsub = self.children()[0];
+			
+			
+			window.addEventListener('detailTemplate',function(e){
+				product_id = e.detail.product_id;
+				if (mui.os.android&&e.detail.aniShow&&parseFloat(mui.os.version)>=4.4) {
+					if (!detailsub) {
+						detailsub = self.children()[0];
+					}
+					console.log(JSON.stringify(e.detail));
+					detailsub.loadURL(e.detail.id);
+					self.show(e.detail.aniShow);
+				}
+			},false);
+			
+			//接收子页面获取productid事件，然后返回事件
+			window.addEventListener('getproductid',function(){
+				console.log('收到获取productid事件')
+				mui.fire(detailsub,'postproductid',{
+					product_id:product_id
+				});
+			},false);
+		});
+	</script> 
+</body>
+</html>

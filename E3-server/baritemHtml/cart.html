@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title>E3</title>
+    <link rel="stylesheet" type="text/css" href="../css/mui.min.css"/>
+    <link rel="stylesheet" type="text/css" href="../css/iconfont.css"/>
+    <link rel="stylesheet" type="text/css" href="../css/own.css"/>
+    <style type="text/css">
+    	
+    		
+   		.table_head {
+  
+   			padding-left: 15px;
+   			height: 30px;
+   			display: table-cell;
+    			vertical-align: middle;
+   		}
+    		
+    		
+    		.head_title {
+    			
+    			/*background-color: darkblue;*/
+    			position: relative;
+    			left: 10px;
+    			right: 10px;
+    		}
+    		
+    		.cellImg {
+    			
+    			max-width: 70%;
+    			height: auto;
+    			vertical-align: middle;
+    			position: relative;
+    			left: 5px;
+    		}
+    		
+    		.mui-table-view .mui-table-view-cell {
+    			background: #f3fcfb;
+    		}
+    		.mui-table-view .mui-table-view-cell:after{
+    			left: 0px;
+    		}
+    	
+    		.leftClassCell {
+    			
+    			margin: 0 auto;
+    			padding-top: 5%;
+    			width: 30%;
+    			float: left;
+    			display: table-cell;
+    			vertical-align: middle;
+    		}
+    		.rightClassCell {
+    			
+    			width: 70%;
+    			float: left;
+    		}
+    		
+    		.headSelect:visited {
+    			
+    			background-color:  red;
+    		}
+    		
+    		.downDiv {
+  
+  			background-color: white;
+    			height: 50px;
+    			width: 100%;
+    			/*网页底部*/
+    			position: fixed;
+    			bottom: 0;
+    		}
+    		
+    		.changeNum {
+    			
+    			padding: 0px;
+    			width: 30px;
+    			height: 30px;
+    			font-size: 30px;
+    		}
+    		
+    		.mui-icon.iconfont.icon-xuanze1,
+    		.mui-icon.iconfont.icon-xuanze {
+    			font-size: 1.1em;
+    			color: #41CEA9;
+    		}
+    		
+    		.head_title {
+    			vertical-align: baseline;
+    		}
+    		
+    		.mui-numbox {
+    			width: 40%;
+    			height: 100%;
+    			padding: 0px;
+    		}
+    		
+    		.mui-numbox [class*=mui-numbox-btn] {
+    			width: 30%;
+    			height: 100%;
+    			font-size: 1em;
+    			padding-bottom: 0.3em;
+    		}
+    		
+    		.itemName {
+    			color: black;
+    			line-height: 1.2em;
+    		}
+    		.itemfeatures {
+    			font-size: 0.6em;
+    			line-height: 0.5em;
+    			padding-top: 3px;
+    		}
+    		.price {
+    			color: #41CEA9;
+    			padding-top: 0px;
+    			margin-top: 0px;
+    		}
+
+    </style>
+   
+</head>
+<body>
+
+	<div class="mui-content">
+		<div class="need-login" style="text-align: center; margin-top: 50px;display: none;">
+			<span style="color: gray; font-size: 0.9em;">你还没有登录</span>
+			<br />
+			<button type="button" class="mui-btn own-btn-green" style="margin-top: 10px; padding: 5px 20px;">请登录</button>
+		</div>
+		<div >
+		<div class="login">
+			<!--<input type="checkbox" />-->
+		</div>
+		<div class="downDiv">
+			sfsf
+		</div>
+	</div>
+	
+	<script src="../js/mui.min.js" charset="UTF-8"></script>
+	<script src="../js/own.js" charset="UTF-8"></script>
+	<script type="text/javascript" src="../js/wl_ajax.js" ></script>
+	<script type="text/javascript" charset="UTF-8">
+		mui.init({
+			swipeBack:false
+		});
+		
+		
+		var cartSupplierItem = [];
+		var cartWebview;//当前购物车webview
+		var needlogin;//需要登录的div
+		var downDiv = document.querySelector('.downDiv');
+		
+		mui.plusReady(function(){
+			cartWebview = plus.webview.currentWebview();
+			needlogin = document.querySelector('.need-login');
+			downDiv.style.display = 'none';
+			//为登录按钮添加事件
+			document.querySelector('.need-login button').addEventListener('tap',function(){
+				var parentWebView = plus.webview.currentWebview().parent();
+				var href = "Mine/login.html";
+				var id = "Mine/login.html";
+				var aniShow = 'slide-in-bottom';
+				var title = '登录';
+				
+				mui.fire(parentWebView,'newWebView',{
+					id:id,
+					href:href,
+					aniShow:aniShow,
+					title:title
+				});
+			},false);
+			
+			//为页面显示的时候添加监听
+			cartWebview.addEventListener('show',function(){
+				//判断用户是否已经登录,已经登录就需要去获取购物车列表
+				if (localStorage.getItem('user')) {
+					//将登录按钮隐藏，并且去获取购物车列表或则更新购物车列表todo
+					needlogin.style.display = 'none';
+					
+					if(cartSupplierItem.length <= 0) {
+						
+						ajax_get_cart({
+							'type':'1'
+						});
+					}
+					
+	
+				}else {
+					//如果退出登录或者没有登录成功这个div将被显示出来。
+					needlogin.style.display = 'block';
+				}
+			},false);
+			
+			//特殊：添加事件接收登录页面成功后发来的消息
+			window.addEventListener('loginSuccess',function(){
+				//页面成功后，要隐藏登录模块，然后去加载数据返回
+				needlogin.style.display = 'none';
+				ajax_get_cart({
+					type:'1'
+				});
+				
+			},false);
+		});
+		
+		
+		function addTop() {
+				
+			mui('.mui-table-view').on('tap','span',function(){
+//				console.log(this.innerHTML);
+				selectItem(this);
+				countSeletNum();
+			});
+			
+			mui('div').on('tap','.table_head',function(){
+				
+				var span = this.getElementsByTagName('span')[0];
+				var isXuanze = selectItem(span);
+				
+				var objThis = span;
+				var cellImgs = span.parentNode.parentNode.getElementsByClassName('selectImg');
+				mui.each(cellImgs,function(index,item) {
+					//去除第一个
+					if (index >= 1) {
+						if (isXuanze) {
+							
+							item.className = "mui-icon iconfont icon-xuanze selectImg";
+						}else {
+							
+							item.className = "mui-icon iconfont icon-xuanze1 selectImg";
+						}
+					}
+				});
+				countSeletNum();
+			});
+			
+			//手动写增加减少
+			mui('.mui-numbox').on('tap','.mui-numbox-btn-minus',function(){
+				var inputNumbox = this.nextSibling;
+				var  num = parseInt(inputNumbox.value);
+				if (num>1) {
+					num -= 1;
+					inputNumbox.value = ''+num;
+				}
+			});
+			mui('.mui-numbox').on('tap','.mui-numbox-btn-plus',function(){
+				var inputNumbox = this.previousSibling;
+				var  num = parseInt(inputNumbox.value);
+				num += 1;
+				inputNumbox.value = ''+num;
+			});
+		}
+		
+		function selectItem(obj) {
+				var isXuanze = obj.classList.contains('icon-xuanze1');
+				if (isXuanze) {
+					obj.className = "mui-icon iconfont icon-xuanze selectImg";
+				}else {
+					
+					obj.className = "mui-icon iconfont icon-xuanze1 selectImg";
+				}
+				return isXuanze;
+		}
+		
+		function countSeletNum (){
+			
+//			var downDivHidden = true;
+//			var cellImgs = document.getElementsByClassName('selectImg');
+//			for (var i = 0; i < cellImgs.length; i ++) {
+//				
+//				var cellImg = cellImgs[i];
+//				var num = cellImg.src.indexOf("iconfont-xuanze.png");
+//				if (num > 1) {
+//					
+//					downDivHidden = false;
+//					break;
+//				}
+//			}
+//			
+//			if(downDivHidden == false) {
+//				
+//				downDiv.style.display = 'block';
+//			}else {
+//				
+//				downDiv.style.display = 'none';
+//			}
+		}
+		
+		function getCartItem(data) {
+			
+			var suppliers = data.suppliers;
+			var cartItems = data.group_cart_items;
+			for (var i = 0; i < suppliers.length; i++) {
+				
+				var supplier = suppliers[i];
+				var cartSupplier = new Object;
+				cartSupplier.supplier_name = supplier.supplier_name;
+				cartSupplier.supplier_id = supplier.supplier_id;
+				
+				for (var j = 0; j < cartItems.length; j ++) {
+
+					var item = new Object;
+					item = cartItems[j];
+					if (cartSupplier.supplier_id == item.supplier_id) {
+						
+						cartSupplier.products = item.products;
+						break;
+					}
+				}
+				cartSupplierItem[i] = cartSupplier;
+			}
+			
+			setHtml(cartSupplierItem);
+			addTop();
+			
+		}
+		
+		
+		function setHtml(items) {
+			
+			
+			var loginDiv =  document.querySelector('.login');
+			var html ='';
+			mui.each(items,function(index,item){
+			
+				console.log(JSON.stringify(item));
+				//结构 <div>head+table</div>
+				var listDiv = '';
+				listDiv += '<div >';
+				//标题 head
+				//结构<p>img + span</p>
+				var listHead ='';
+			
+				listHead += '<p class="table_head">';
+				listHead += '<span class="mui-icon iconfont icon-xuanze1 selectImg"></span>';
+//				listHead += '<img src="../img/iconfont-xuanzekuang.png" class="selectImg"/>';
+				listHead += '<span class="head_title">' + item.supplier_name + '</span>';
+				listHead += '</p>';
+				listDiv += listHead;
+				
+				listDiv += '<ul class="mui-table-view">';
+				var listCellStr = '';
+				mui.each(item.products,function(i,product){
+					listCellStr += '<li class="mui-table-view-cell mui-media">';
+					//左边div
+					var leftCellDiv = '';
+					leftCellDiv += '<div class="leftClassCell">';
+					leftCellDiv += '<p style="display:inline;"><span class="mui-icon iconfont icon-xuanze1 selectImg"></span></p>';
+//					leftCellDiv += '<img src="../img/iconfont-xuanzekuang.png" class="selectImg" />';
+					leftCellDiv += '<img src="http://file.huihoo.com'+ product.product_small_image_url + '"class="cellImg" />';
+					leftCellDiv += '</div>';
+					listCellStr += leftCellDiv;
+					//右边div
+					var rightCellDiv = '';
+					rightCellDiv += '<div class="rightClassCell">';
+					rightCellDiv += '<p class="itemName mui-ellipsis-2">'+product.product_name+'</p>';
+					var features = product.features;
+					if (features) {
+						
+						rightCellDiv += '<p class="itemfeatures">'+ features[0].product_feature_type_id +':' + features[0].description +'</p>';
+					}
+					rightCellDiv += '<p class="price">' + '¥' + product.default_price+ '.00'+ '</p>';
+					
+					rightCellDiv += '<div class="mui-numbox"><button class="mui-btn mui-numbox-btn-minus" type="button">-</button><input class="mui-numbox-input" type="number"  value="1"/><button class="mui-btn mui-numbox-btn-plus" type="button">+</button></div>';
+					rightCellDiv += '</div>';
+					listCellStr += rightCellDiv;
+					
+					listCellStr += '</li>';
+				});
+				
+				listDiv += listCellStr + '</ul>';
+				
+				listDiv += '</div>'
+				
+				
+				html += listDiv;
+				console.log(html);
+			});
+			
+			loginDiv.innerHTML = html;
+		}
+	</script>
+</body>
+</html>

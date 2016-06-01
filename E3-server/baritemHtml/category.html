@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title>E3</title>
+	<link rel="stylesheet" type="text/css" href="../css/mui.min.css"/>    
+    <style type="text/css">
+    		.mui-col-xs-4,
+    		.mui-col-xs-8 {
+    			height: 100%;
+    			overflow-y: auto;
+    		}
+    		.mui-segmented-control .mui-control-item {
+    			line-height: 40px;
+    			width: 100%;
+    			text-align: center;
+    			padding-right: 10px;
+    		}
+    		
+    		.mui-segmented-control .mui-control-item img {
+    			width: 25px;
+    			vertical-align: text-bottom;
+    		}
+    		
+    		
+		.mui-segmented-control.mui-segmented-control-inverted .mui-control-item.mui-active {
+			background-color: #F9F9F9;
+			color: #41cea9;
+		}
+		
+		.mui-table-view-cell {
+			padding: 8px;
+			text-align: center;
+			background-color: #F9F9F9;
+		}
+		.mui-table-view:after,
+		.mui-table-view-cell:after {
+			height: 0px;
+		}
+		
+		.mui-segmented-control.mui-segmented-control-inverted.mui-segmented-control-vertical .mui-control-item,
+		.mui-segmented-control.mui-segmented-control-inverted.mui-segmented-control-vertical .mui-control-item.mui-active {
+			border-bottom: none;
+		}
+		
+		.mui-control-content {
+			font-size: 0.9em;
+		}
+    </style>
+</head>
+<body>
+	
+	<div class="mui-content mui-row mui-fullscreen">
+		<div class="mui-col-xs-4" style="background: white;">
+			<div id="categoryStair" class="mui-segmented-control mui-segmented-control-inverted mui-segmented-control-vertical">
+			</div>
+		</div>
+		<div id="categoryMovers" class="mui-col-xs-8" style="background: #F9F9F9;">
+			<!--<div id="category3387" class="mui-control-content mui-active">
+				<ul class="mui-table-view">
+					<li class="mui-table-view-cell">
+						手机通讯
+					</li>
+					<li class="mui-table-view-cell">
+						电脑数码
+					</li>
+					<li class="mui-table-view-cell">
+						厨房电器
+					</li>
+					<li class="mui-table-view-cell">
+						生活电器
+					</li>
+					<li class="mui-table-view-cell">
+						个人护理
+					</li>
+					<li class="mui-table-view-cell">
+						办公用品
+					</li>
+					<li class="mui-table-view-cell">
+							音像书籍
+					</li>
+				</ul>
+			</div>-->
+		</div>
+	</div>
+	
+	<script src="../js/mui.min.js" charset="UTF-8"></script>
+	<script src="../js/ajax.js" charset="UTF-8"></script>
+	<script src="../js/own.js" charset="UTF-8"></script>
+	<script type="text/javascript" charset="UTF-8">
+		mui.init({
+			swipeBack:false
+		});
+		
+		var categoryWebview;//这个页面的实例
+		var categoryStair = [];//第一级category数据存储
+		var categoryMovers = [];//第二级category数据存储
+		
+		var categoryHtml = [];//html数组
+		
+		var categoryStairHtml;//categoryStair的div
+		var categoryMoversHtml;//categoryMovers的div
+		
+		var parentWebView;//父类
+		mui.plusReady(function(){
+			categoryWebview = plus.webview.currentWebview();
+			categoryStairHtml = document.getElementById('categoryStair');
+			categoryMoversHtml = document.getElementById('categoryMovers');
+			parentWebView = plus.webview.currentWebview().parent();
+			
+			categoryWebview.addEventListener('show',function(){
+				//当页面显示的时候如果已经存在数据就不再请求
+				if (categoryStair.length <= 0) {
+					ajax_get_first_category({
+						status:'THREE'
+					});
+				}
+			},false);
+			
+			//为第一级分类监听点击事件
+			mui('#categoryStair').on('tap','.mui-control-item',function(){
+				var item = this;
+				get_sub_categoryByParentID(item.getAttribute('href').substring(9));
+			});
+			
+			//监听第二级分类的点击事件
+			//监听事件中mui选择的时候最好不要有多个被选择的对象，也就是＃categoryMovers最好只表示一个节点。也就是最好用id
+			mui('#categoryMovers').on('tap','.mui-table-view-cell a',function(){
+				var categoryA = this;
+				var id = 'category/category-detail-needtem.html';
+				var title = categoryA.innerText;
+				var href = 'category/category-detail-needtem.html';
+				var isBars = false;
+				var barsIcon = '';
+				var aniShow = getaniShow();
+				var categoryID = categoryA.getAttribute('href');
+				
+				//弹入分类商品列表
+				mui.fire(parentWebView,'newWebView',{
+					id:id,
+					href:href,
+					aniShow:aniShow,
+					title:title,
+					isBars:isBars,
+					barsIcon:barsIcon,
+					categoryID:categoryID
+				});
+			});
+			
+		});
+		
+		//获取第一级分类成功的回调函数
+		function categoryStairSuccess(data){
+			mui.each(data.result,function(index,item){
+				var indexitem = {};
+				indexitem.id = item.product_category_id;
+				indexitem.name = item.category_name;
+				indexitem.imageurl = 'http://file.huihoo.com/' + item.link_one_image_url
+				categoryStair[index] =  indexitem;
+				
+				var html = '<a class="mui-control-item" href="#category'+categoryStair[index].id+'"><span><img src="'+categoryStair[index].imageurl+'"/>&nbsp&nbsp</span>'+categoryStair[index].name+'</a>';
+				categoryHtml.push(html);
+			});
+			//设置categorystairhtml的innerhtml
+			categoryStairHtml.innerHTML = categoryHtml.join('');
+			//设置初始化第一个的mui-active
+		    document.querySelector('.mui-control-item').classList.add('mui-active');
+			
+			//获取第一个item下的二级分类
+			get_sub_categoryByParentID(categoryStair[0].id);
+			
+			//重置categoryHtml数组
+			categoryHtml = [];
+		}
+		
+		//获取第二级分类成功的回调函数
+		function categoryMoversSuccess(parentID,data) {
+			var categorysub = {};
+			categorysub.parentID = parentID;
+			categorysubarray = [];
+			mui.each(data[parentID],function(index,item){
+				var subitem = {};
+				subitem.categoryID = item.product_category_id;
+				subitem.productName = item.category_name;
+				categorysubarray[index] = subitem;
+			});
+			categorysub.categorysubarray = categorysubarray;
+			//如果已经存在这个id的信息就不在加入
+			var item = get_categoryMoversStateByID(parentID);
+			if (item && item.categorysubarray.length > 0) {
+				return;
+			}
+			
+			categoryMovers.push(categorysub);
+			createSubCategoryHtml(categorysub);
+			setCurSubCategory();
+		}
+		
+		//创建二级分类的html
+		function createSubCategoryHtml(categorysub) {
+			var html = '<div id="category'+categorysub.parentID+'" class="mui-control-content"><ul class="mui-table-view">';
+			mui.each(categorysub.categorysubarray,function(index,item){
+				html = html + '<li class="mui-table-view-cell"><a href ="'+item.categoryID+'">'+item.productName+'</a></li>';
+			});
+			html = html + '</ul></div>';
+			console.log(html);
+			categoryHtml.push(html);
+			
+			categoryMoversHtml.innerHTML = categoryHtml.join('');
+			
+		}
+		
+		//在完成创建二级分裂之后设置当前选中的subcategory
+		function setCurSubCategory() {
+			var stairslist = document.querySelectorAll('.mui-control-item');
+			var moversList = document.querySelectorAll('.mui-control-content');
+			var curItem;
+			for (var i = 0;i < stairslist.length; i++) {
+				if (stairslist[i].classList.contains('mui-active')) {
+					curItem = stairslist[i];
+					break;
+				}
+			}
+			
+			var curstairsID = curItem.getAttribute('href').substring(9);
+			var showItem = null;
+			for (var i = 0; i < moversList.length;i++) {
+				if (moversList[i].id.substring(8) == curstairsID) {
+					showItem = moversList[i];
+					break;
+				}
+			}
+			
+			//如果现在没有content来显示 则马上请求 这个数据
+			if (showItem) {
+				showItem.classList.add('mui-active');
+			}else {
+				get_sub_categoryByParentID(curstairsID);
+			}
+		}
+		
+		
+		//通过parentID获取下面的二级分类
+		function get_sub_categoryByParentID(parentID) {
+			//只有当categoryMovers这个数组中存在这个id并且这个id下面的分类数量大于0才不需要再次请求
+			var item = get_categoryMoversStateByID(parentID);
+			if (item && item.categorysubarray.length > 0) {
+				return;
+			}
+			ajax_get_sub_category({
+				parent_category_id:parentID
+			});
+		}
+		
+		function get_categoryMoversStateByID(parentID) {
+			
+			for (var i = 0 ; i < categoryMovers.length;i++) {
+				if (categoryMovers[i].parentID == parentID) {
+					return categoryMovers[i];
+				}
+			}
+			return null;
+		}
+		
+	</script>
+</body>
+</html>

@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title>E3</title>
+    <link rel="stylesheet" type="text/css" href="../css/mui.min.css"/>
+    <link rel="stylesheet" type="text/css" href="../css/iconfont.css"/>
+    <link rel="stylesheet" type="text/css" href="../css/own.css"/>
+    <style type="text/css">
+    		.mui-table-view:after {
+    			height: 0px;
+    		}
+    		
+    		
+    		/*图片显示的时候设置为自动 因为 从服务器来的图片大小相同*/
+    		.mui-table-view.mui-grid-view .mui-table-view-cell .mui-media-object {
+    			line-height: auto;
+    			max-width: auto;
+    			height: auto;
+    			
+    			border-top-right-radius: 4px; 
+    			border-top-left-radius: 4px;
+    		}
+    		
+    		.mui-table-view-cell {
+    			margin-bottom: 10px;
+    		}
+    		.bgDiv {
+    			border: 1px solid rgba(204,204,204,0.7); 
+    			border-radius: 5px; 
+    			background-color: white;
+    			width: 100%;
+    		}
+    		.mui-table-view.mui-grid-view .mui-table-view-cell .mui-media-body {
+    			margin-top: 2px;
+    			margin-bottom: 5px;
+    			height: auto;
+    		}
+    		
+    		.mui-table-view.mui-grid-view .mui-table-view-cell .mui-media-body p {
+    			white-space:pre;
+    			color: black;
+    		}
+    		
+    		.mui-table-view.mui-grid-view .mui-table-view-cell .mui-media-body p.mui-ellipsis-2 {
+    			height: 30px;
+    		}
+    		
+    		.mui-table-view.mui-grid-view .mui-table-view-cell .mui-media-body .price-one {
+    			margin-top: 12px;
+    			float: left;
+    			font-size: 1.1em;
+    			margin-left: 7%;
+    			color: red;
+    			margin-bottom: 10px;
+    		}
+    		.mui-table-view.mui-grid-view .mui-table-view-cell .mui-media-body .price-two {
+    			margin-top: 12px;
+    			float: right;
+    			font-size: 1.1em;
+    			margin-right: 7%;
+    			text-decoration: line-through;
+    		}
+    </style>
+</head>
+<body>
+	
+	<div id="homeDiv" class="mui-content own-content-padding">
+		<div id="productSlider" class="mui-slider">
+			
+		</div>
+		<div id="recommend" class="mui-table-view mui-grid-view own-gray-color">
+			
+		</div>
+	</div>
+	
+	<script src="../js/mui.min.js" charset="UTF-8"></script>
+	<script src="../js/ajax.js" charset="UTF-8"></script>
+	<script src="../js/own.js" charset="UTF-8"></script>
+	<script type="text/javascript" charset="UTF-8">
+		mui.init({
+			swipeBack:false
+		});
+		
+		
+		//将ios中独有的东西在android上屏蔽
+		
+		var isLoadMarquee = false;
+		var isLoadRecommend = false;
+		var currentWebview;
+		var homeDiv;
+		var marqueeArray = [];//跑马灯数据数组
+		var recommendArray = [];//推荐商品数组
+		mui.plusReady(function(){
+			currentWebview = plus.webview.currentWebview();
+			homeDiv = document.getElementById('homeDiv');
+			//进到这个函数说明plusready可以通信(解决为什么第一个显示的界面不没有触发show函数)
+			pasueLink();
+			//监听show事件请求数据
+			currentWebview.addEventListener('show',function(){
+				pasueLink();
+			},false);
+			
+			//添加每个item点击的监听事件
+			mui('#recommend').on('tap','a',function(){
+				var item = this;
+				var itemID = this.getAttribute('href');
+				var indexWebview = plus.webview.getWebviewById('HBuilder');
+				var anishow = getaniShow();
+				//弹入分类商品列表
+				mui.fire(indexWebview,'newWebView',{
+					id:'Home/product-detail-needtem.html',
+					href:'Home/product-detail-needtem.html',
+					aniShow:anishow,
+					title:'商品详情',
+					isBars:false,
+					barsIcon:'',
+					product_id:itemID,
+				});
+			});
+		});
+		
+		//与服务器通信
+		function pasueLink(){
+			if (!isLoadMarquee && marqueeArray.length<=0) {
+				//开始请求
+				isLoadMarquee  = true;
+				ajax_get_Marquee({});
+			}
+			if (!isLoadRecommend && recommendArray.length<=0) {
+				isLoadRecommend = true;
+				ajax_get_Recommend();
+			}
+		}
+		
+		function getMarqueeSuccess(data){
+			if (data.code == '000000') {
+				marqueeArray = data.paomadeng;
+				//设置跑马灯
+				setMarquee();
+			}
+			isLoadMarquee = false;
+		}
+		function getRecommendSuccess(data){
+			if (data.code = '000000') {
+				mui.each(data.hotSaleProducts,function(index,item){
+					var dataItem = {};
+					dataItem.product_price = item.product_price;
+					dataItem.product_name = item.product_name;
+					dataItem.large_image_url = item.large_image_url;
+					dataItem.product_id = item.product_id;
+					recommendArray.push(dataItem);
+				});
+				//设置推荐商品
+				setRecommend();
+			}
+			isLoadRecommend = false;
+		}
+		
+		function setMarquee(){
+			var sliderMarquee = document.getElementById('productSlider');
+			var sliderGroup = document.createElement('div');
+			sliderGroup.className = 'mui-slider-group mui-slider-loop';
+			sliderMarquee.appendChild(sliderGroup);
+			var sliderIndicator = document.createElement('div');
+			sliderIndicator.className = 'mui-slider-indicator';
+			sliderMarquee.appendChild(sliderIndicator);
+			
+			for (var i = 0; i < marqueeArray.length; i++) {
+				
+				if (0 == i) {
+					var sliderItemDuplicate = document.createElement('div');
+					sliderItemDuplicate.className = 'mui-slider-item mui-slider-item-duplicate';
+					sliderItemDuplicate.innerHTML = '<a href="'+marqueeArray[marqueeArray.length-1].contentId+'">\
+							<img src="'+marqueeArray[marqueeArray.length-1].imagerpath+'" />\
+						</a>';
+					sliderGroup.appendChild(sliderItemDuplicate);
+				}
+				
+				
+				var sliderItem = document.createElement('div');
+				sliderItem.className = 'mui-slider-item';
+				sliderItem.innerHTML = '<a href="'+marqueeArray[i].contentId+'">\
+						<img src="'+marqueeArray[i].imagerpath+'" />\
+					</a>';
+				sliderGroup.appendChild(sliderItem);
+					
+				var indicatorItme = document.createElement('div');
+				if (i == 0) {
+					indicatorItme.className = 'mui-indicator mui-active';
+				}else {
+					indicatorItme.className = 'mui-indicator';
+				}
+				sliderIndicator.appendChild(indicatorItme);
+				
+				if (marqueeArray.length-1 == i) {
+					var sliderItemDuplicate = document.createElement('div');
+					sliderItemDuplicate.className = 'mui-slider-item mui-slider-item-duplicate';
+					sliderItemDuplicate.innerHTML = '<a href="'+marqueeArray[0].contentId+'">\
+							<img src="'+marqueeArray[0].imagerpath+'" />\
+						</a>';
+					sliderGroup.appendChild(sliderItemDuplicate);
+				}
+				
+				var slider = mui('.mui-slider');
+				slider.slider();
+			}
+		}
+		
+		//设置推荐商品
+		function setRecommend(){
+			var recommend = document.getElementById('recommend');
+			mui.each(recommendArray,function(index,item){
+				var li = document.createElement('li');
+				li.className = 'mui-table-view-cell mui-media mui-col-xs-6';
+				li.innerHTML = '<a href="'+item.product_id+'">\
+					<div class= "bgDiv">\
+						<img class="mui-media-object" src="http://file.huihoo.com'+item.large_image_url+'"/>\
+						<div class="mui-media-body">\
+							<p class="mui-ellipsis-2">'+item.product_name+'</p>\
+							<p class="price-one">¥'+item.product_price.default_price+'</p>\
+							<p class="price-two">¥'+item.product_price.list_price+'</p>\
+						</div>\
+					</div>\
+				</a>';
+				recommend.appendChild(li);
+			});
+		}
+	</script>
+	
+</body>
+</html>

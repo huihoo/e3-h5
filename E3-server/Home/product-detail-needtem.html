@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+   	<title>E3 未用父子模版，一直加载在内存中</title>
+   	
+   	<link rel="stylesheet" type="text/css" href="../css/mui.min.css"/>
+    <link rel="stylesheet" type="text/css" href="../css/iconfont.css"/>
+    <link rel="stylesheet" type="text/css" href="../css/own.css"/>
+    		
+    <style type="text/css">
+    		
+    		.mui-table-view-cell:after {
+    			left: 0px;
+    		}
+    		 .mui-table-view .mui-table-view-cell {
+    			background-color: white;
+    		}
+    
+    		.mui-slider-indicator .mui-active.mui-indicator {
+    			/*background-color: #41CEA9;*/
+    		}
+    		#headul:after {
+    			height: 0px;
+    		}
+    		#headul .mui-table-view-cell {
+    			padding-bottom: 0px;
+    			padding-top: 0px;
+    			margin-top: 0px;
+    			background-color: white;
+    		}
+    		#headul {
+    			margin-top: 10px;
+    			margin-bottom: 8px;
+    		}
+    		
+    		#headul .mui-table-view-cell:after {
+    			height: 0px;
+    		}
+    		
+    		.mui-table-cell .borderleft {
+    			height: 40%;
+    			border-left: 1px solid gray; 
+    			margin-left: 5px;
+    		}
+    		
+    		.mui-icon.iconfont {
+    			font-size: 1em;
+    			color: #41CEA9;
+    		}
+    		#headul .mui-table-view-cell.setbg {
+    			background-color: #f3fcfb;
+    		}
+    		#headul .mui-table-view-cell.setbg div {
+    			font-size: 0.7em;
+    			color: gray;
+    		}
+    		.mui-table-view-cell p.evaluateTitle {
+    			color:black;
+    			font-size: 1em;
+    		}
+    		
+    		.mui-table-view {
+    			margin-bottom: 10px;
+    		}
+    		
+    		span.evaluate {
+    			font-size: 0.68em;
+    			color: darkgray;
+    			border: 1px solid darkgray;
+    			word-break: nowrap;
+    			word-wrap: nowrap;
+    			border-radius: 2px;
+    			text-align: center;
+    		}
+    		.mui-table-view-cell .evaluaterHead img{
+    			background-color: darkgray;
+    			width: 2.5em; 
+    			max-width: 2.5em; 
+    			height: 2.5em;
+    			border:1px solid gray; 
+    			border-radius: 50%;
+    		}
+    		.mui-table-view-cell .evaluaterHead span {
+    			font-size: 0.9em;
+    			vertical-align: super;
+    		}
+    		
+    		.mui-table-view-cell .evaluteContent {
+    			font-size: 0.7em;
+    			line-height: 1.2em;
+    		}
+    		.mui-table-view-cell .evaluteMsg {
+    			font-size: 0.5em;
+    		}
+    		.mui-table-view-cell.moreEvaluate {
+    			text-align: center;
+    			padding-top: 8px;
+    			padding-bottom: 8px;
+    		}
+    		.mui-table-view-cell.moreEvaluate a {
+    			color: darkgray;
+    		}
+    		.mui-table .mui-col-xs-4 {
+    			font-size: 0.68em;
+    			color: darkgray;
+    		}
+    		.mui-table .mui-col-xs-6 {
+    			line-height: 1.1em;
+    			font-size: 0.8em;
+    		}
+    		.mui-table .mui-col-xs-6 .stroemsg {
+    			font-size: 0.5em;
+    			color: darkgray;
+    		}
+    		.mui-table .mui-col-xs-6  .lingBtn {
+    			font-size: 1em;
+    		}
+    		
+    		.mui-table-view.mui-grid-view .mui-table-view-cell .mui-media-body {
+    			margin-top: 2px;
+    			margin-bottom: 5px;
+    			height: auto;
+    		}
+    		
+    		.mui-table-view.mui-grid-view .mui-table-view-cell .mui-media-body p.mui-ellipsis-2 {
+    			font-size: 0.5em;
+    			line-height: 1.2em;
+    			white-space:pre;
+    			height: 2.3em;
+ 
+    		}
+    		.mui-table-view.mui-grid-view .mui-table-view-cell .mui-media-body p.price {
+    			font-size: 0.8em;
+    			color: #41CEA9;
+    		}
+    		
+    </style>
+</head>
+<body>
+	<header class="mui-bar mui-bar-nav own-header-hidden">
+		<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left own-gray-color"></a>
+		<h1 class="mui-title">商品详情</h1>
+	</header>
+	
+	<div id="detailcontent" class="mui-content  own-content-padding">
+		
+	</div>
+	
+	<script src="../js/ajax.js" charset="UTF-8"></script>
+	<script src="../js/mui.min.js" charset="UTF-8"></script>
+	<script src="../js/own.js" charset="UTF-8"></script>
+	<script type="text/javascript" charset="UTF-8">
+	
+		mui.init({
+			swipeBack:true
+		});
+		var currentWebview;//当前子页面
+		var paredntWebview;//父页面
+		var product_id;
+		var detail = {};
+		var detailcontent;
+		mui.plusReady(function(){
+			currentWebview = plus.webview.currentWebview();
+			paredntWebview = currentWebview.parent();
+			detailcontent = document.getElementById('detailcontent');
+			
+			//监听页面隐藏的隐藏的时候清空数据信息
+			currentWebview.addEventListener('hide',function(){
+//				detailcontent.innerHTML = '';
+				detail = {};
+			},false);
+			
+			//获取服务器信息
+			mui.fire(paredntWebview,'getproductid',{});
+			//监听返回getproductid事件
+			window.addEventListener('postproductid',function(e){
+				console.log('收到productid');
+				product_id = e.detail.product_id;
+				//像服务器请求
+				ajax_get_product_detail({
+					product_id:product_id
+				});
+			},false);
+			
+		});
+		
+		function productDetailSuccess(data){
+			console.log(JSON.stringify(data));
+			if (data.code == '000000') {
+				//成功获取可以解析
+				detail.detail_small_pictures = data.detail_small_pictures;
+				detail.product_name = data.product.product_name;
+				detail.product_price = data.product.product_price;
+				setHtml();
+			}
+		}
+		
+		function setHtml(){
+			
+			//第一步设置第一个图片滑动
+			setSldiderHtml();
+			//第二步设置商品名字价钱等
+			setproductMessage();
+			//设置颜色选择
+			setChooseColor();
+			//设置评价
+			setevalute();
+			//设置店铺
+			setStore();
+			//设置相试宝贝
+			setGoodsLike();
+			
+		}
+		
+		
+		//设置slider
+		function setSldiderHtml(){
+			var picSlider = document.createElement('div');
+			picSlider.className = 'mui-slider';
+			detailcontent.appendChild(picSlider);
+			
+			var picSliderGroup = document.createElement('div');
+			picSliderGroup.className = 'mui-slider-group';
+			
+			var picsliderindicator = document.createElement('div');
+			picsliderindicator.className = 'mui-slider-indicator';
+			for (var i = 1; i <detail.detail_small_pictures.length;) {
+				var item = detail.detail_small_pictures[i];
+				//设置itemdetai
+				var div = document.createElement('div');
+				div.className = 'mui-slider-item';
+				var html = '<a href="#"><img src="http://file.huihoo.com'+item+'"/></a>';
+				div.innerHTML = html;
+				picSliderGroup.appendChild(div);
+				//设置itemindicator
+				var divindicator = document.createElement('div');
+				if (i == 1) {
+					divindicator.className = 'mui-indicator mui-active';
+				} else{
+					divindicator.className = 'mui-indicator';
+				}
+				picsliderindicator.appendChild(divindicator);
+			
+				i = i +2;
+			}
+			picSlider.appendChild(picSliderGroup);
+			picSlider.appendChild(picsliderindicator);
+			var gallery = mui('.mui-slider');
+			gallery.slider({
+			  interval:0//自动轮播周期，若为0则不自动播放，默认为0；
+			});
+		}
+		
+		//设置信息
+		function setproductMessage(){
+			var headul =  document.createElement('ul');
+			headul.id = 'headul';
+			headul.className = 'mui-table-view';
+			detailcontent.appendChild(headul);
+			var html = '<li class="mui-table-view-cell">\
+					<div class="mui-table">\
+						<div class="mui-table-cell mui-col-xs-10">\
+							<h5 class="own-black-color mui-ellipsis-2">'+detail.product_name+'</h5>\
+							<h5 class="own-main-color">¥'+detail.product_price.defaultPrice+'</h5>\
+							<h6 class="own-text-through">¥'+detail.product_price.listPrice+'</h6>\
+						</div>\
+						<div class="mui-table-cell mui-col-xs-2 mui-text-right" >\
+							<div class="borderleft">\
+								<h6>心愿单</h6>\
+							</div>\
+						</div>\
+					</div>\
+			</li>\
+			<li class="mui-table-view-cell" >\
+					<div class="mui-table">\
+						<div class="mui-table-cell mui-col-xs-10">\
+							<h5 class="own-black-color">快递12.00元</h5>\
+						</div>\
+						<div class="mui-table-cell mui-col-xs-2 mui-text-right">\
+							<h5 class="own-black-color">成都</h5>\
+						</div>\
+					</div>\
+			</li>\
+			<li class="mui-table-view-cell setbg">\
+				<div>\
+					<span class="mui-icon iconfont icon-queren" ></span>\
+					<span>商家保证</span>\
+				</div>\
+					<div>\
+						<span class="mui-icon iconfont icon-queren" ></span>\
+						<span>7天无理由退换货，退货邮费由买家承担</span>\
+					</div>\
+					<div>\
+						<span class="mui-icon iconfont icon-queren" ></span>\
+						<span>单笔订单满199元，送礼物一份</span><br />\
+					</div>\
+					<div>\
+						<span class="mui-icon iconfont icon-queren" ></span>\
+						<span>单笔订单满399元，免快递费(不包含地区：新疆)</span>\
+					</div>\
+			</li>';
+			headul.innerHTML = html;
+		}
+		
+		
+		//设置选择颜色分类
+		function setChooseColor(){
+			var chooseUl = document.createElement('ul');
+			chooseUl.className = 'mui-table-view chooseUl';
+			chooseUl.innerHTML = '<li class="mui-table-view-cell">\
+								<a href="#" class="mui-navigate-right">选择 颜色 分类</a>\
+								</li>';
+			detailcontent.appendChild(chooseUl);
+			
+		}
+		
+		//设置评价
+		function setevalute(){
+			var evaluteUl = document.createElement('ul');
+			evaluteUl.className = 'mui-table-view';
+			detailcontent.appendChild(evaluteUl);
+			
+			//评价块
+			var evaluteDiv = document.createElement('li');
+			evaluteDiv.className = 'mui-table-view-cell';
+			evaluteDiv.innerHTML = '<p class="evaluateTitle">宝贝评价</p>\
+				<div>\
+					<span class="evaluate">味道好闻（46）</span>\
+					<span class="evaluate">服务态度好（2）</span>\
+					<span class="evaluate">是正品（1）</span>\
+					<span class="evaluate">包装严实（6）</span>\
+					<span class="evaluate">快递不错（90）</span>\
+					<span class="evaluate">质量不错（20）</span>\
+				</div>';
+			evaluteUl.appendChild(evaluteDiv);
+			//评价
+			var evaluateContent = document.createElement('li');
+			evaluateContent.className = 'mui-table-view-cell';
+			evaluateContent.innerHTML = '<div class="evaluaterHead">\
+					<img src="../img/touxiang.jpg" />\
+					<span>王**小明</span>\
+				</div>\
+				<p class="evaluteContent">颜色和图片上的一样，没有色差，穿上以后也没有想象中的显黑，反而显白,颜色和图片上的一样，没有色差，穿上以后也没有想象中的显黑，反而显白</p>\
+				<p class="evaluteMsg">2015－01-02,颜色分类：风之恋男 Q版5ml 净含量：其他/other</p>';
+			evaluteUl.appendChild(evaluateContent);
+			//查看更多
+			var evaluateMore = document.createElement('li');
+			evaluateMore.className = 'mui-table-view-cell moreEvaluate';
+			evaluateMore.innerHTML = '<a href="#">查看更多信息</a>';
+			evaluteUl.appendChild(evaluateMore);
+		}
+		
+		//设置店铺
+		function setStore(){
+			var storeUl = document.createElement('ul');
+			storeUl.className = 'mui-table-view';
+			storeUl.innerHTML = '<li class="mui-table-view-cell">\
+				<div class="evaluaterHead">\
+					<img src="../img/bg.jpeg" />\
+					<span class="mui-ellipsis">[妮妮的店铺]全部正品</span>\
+				</div>\
+				<div class="mui-table">\
+					<div class="mui-table-cell mui-col-xs-4">发货速度：4.8</div>\
+					<div class="mui-table-cell mui-col-xs-4">发货数度：5.0</div>\
+					<div class="mui-table-cell mui-col-xs-4">发货数度：4.5</div>\
+				</div>\
+				<div class="mui-table storeLink " style="text-align: center;">\
+					<div class="mui-table-cell mui-col-xs-6">396<br/><span class="stroemsg">全部宝贝</span><br/><span class="evaluate lingBtn">查看宝贝分类</span></div>\
+					<div class="mui-table-cell mui-col-xs-6">3.3万<br/><span class="stroemsg">关注人数</span><br/><span class="evaluate lingBtn">进入店铺吧</span></div>\
+				</div>\
+			 </li>';
+			detailcontent.appendChild(storeUl);
+		}
+		
+		
+		function setGoodsLike() {
+			var goods = document.createElement('ul');
+			goods.className = 'mui-table-view mui-grid-view';
+			detailcontent.appendChild(goods);
+			
+			var word = document.createElement('p');
+			word.className = 'own-black-color';
+			word.style.marginBottom = '0px';
+			word.style.marginLeft = '5px';
+			word.style.paddingTop = '5px';
+			word.innerText = '相似商品';
+			goods.appendChild(word);
+			
+			for (var i = 0; i < 8; i++) {
+				var  goodsItem = document.createElement('li');
+				goodsItem.className = 'mui-table-view-cell mui-media mui-col-xs-3';
+				goodsItem.innerHTML = '<a href="#">\
+							<img class="mui-media-object" style="max-width: 100%;height: auto" src="../img/3.jpg" />\
+							<div class="mui-media-body ">\
+								<p class="mui-ellipsis-2">尽量不要福建省批发价我佩服排位积分排位</p>\
+								<p class="price">¥22.0</p>\
+							</div>\
+						</a>'
+				goods.appendChild(goodsItem);
+			}
+//			<li class="mui-table-view-cell mui-media mui-col-xs-3">
+//				<a href="#">
+//					<img class="mui-media-object" style="max-width: 100%;height: auto" src="../img/bg.jpeg" />
+//					<div class="mui-media-body ">
+//						<p class="mui-ellipsis-2">尽量不要福建省批发价我佩服排位积分排位</p>
+//						<p class="price">¥22.0</p>
+//					</div>
+//				</a>
+//			</li>
+			
+			
+		}
+		
+	</script>
+	
+</body>
+</html>

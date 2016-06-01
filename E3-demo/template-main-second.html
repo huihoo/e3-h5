@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="css/iconfont.css"/>
+    <link rel="stylesheet" type="text/css" href="css/own.css"/>
+    <link rel="stylesheet" type="text/css" href="css/mui.min.css"/>
+    <style type="text/css">
+    		.mui-bar .mui-action-back {
+    			color: gray;
+    		}
+    		.loader {
+			position: absolute;
+			top: 25%;
+			width: 100%;
+			height: 60%;
+			color: #888;
+			font-size: 14px;
+			text-align: center;
+		}
+		.mui-bar .mui-title {
+			color: black;
+		}
+    </style>
+</head>
+<body>
+	<header class="mui-bar mui-bar-nav">
+		<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+		<h1 class="mui-title">首页</h1>
+		<a id="rightBar" class="mui-icon mui-icon-personadd mui-pull-right"></a>
+	</header>
+	
+	<div class="loader">
+		<a>
+			<span class="mui-spinner"></span>
+		</a>
+		<br />
+		<span>加载中...</span>
+	</div>
+	
+	<script src="js/mui.min.js" charset="UTF-8"></script>
+	<script type="text/javascript" charset="UTF-8">
+		mui.init({
+			swipeBack:true
+		});
+		var title;
+		var extendOptions;
+		var contentWebview = null; var self = null;
+		var rightBar;
+		
+		
+		mui.plusReady(function(){
+			//获取dom节点
+			self = plus.webview.currentWebview();
+			rightBar = document.getElementById('rightBar');
+			title = document.querySelector('.mui-title');
+			
+			window.addEventListener('templateFire',function(options){
+				title.innerText = options.detail.title;
+				var id = options.detail.id;
+				var aniShow = options.detail.aniShow;
+				var href = options.detail.href;
+				var isBars = options.detail.isBars;
+				var barsIcon = options.detail.barsIcon;
+				extendOptions = options.detail.extendOptions;
+				
+				if (isBars) {
+					rightBar.style.display = 'inline';
+					rightBar.className = barsIcon + ' mui-pull-right';
+					
+				}else {
+					rightBar.style.display = 'none';
+				}
+				if (mui.os.android&&aniShow&&parseFloat(mui.os.version)>=4.4) {
+					if (contentWebview == null) {
+						contentWebview = self.children()[0];
+					}
+					
+					var str = contentWebview.getURL();
+					var index = str.indexOf('www/');
+					str = str.substring(index+4);
+					if (!~id.indexOf('new')&&(contentWebview.getURL() == href || str == href)) {
+						console.log("loaded");
+						contentWebview.show();
+					}else {
+						console.log("new load");
+						contentWebview.loadURL(href);
+					}
+					self.show(aniShow);
+				}
+				
+			},false);
+			
+			//接收子页面的获取extendOptions的事件
+			window.addEventListener('getExtendOptions',function(e){
+				console.log('收到获取extendOptions的事件');
+				if (contentWebview == null) {
+					contentWebview = self.children()[0];
+				}
+				mui.fire(contentWebview,'postExtendOptions',{
+					extendOptions:extendOptions
+				});
+			},false);
+		});
+	</script>
+	
+</body>
+</html>

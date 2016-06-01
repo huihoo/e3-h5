@@ -1,0 +1,49 @@
+
+.own-left-nav-color {
+	color: gray;
+}
+
+.own-main-color {
+	color: #41cea9;
+}
+
+.own-gray-color {
+	background-color: #EBEBF1;
+}
+
+.own-black-color {
+	color: black;
+}
+.own-text-through {
+	text-decoration: line-through;
+}
+
+.own-main-background-color {
+	background-color: #41cea9;
+}
+
+.own-header-hidden {
+	display: none!important;
+}
+
+.own-content-padding {
+	padding-top: 0 !important;
+}
+
+.own-btn-green {
+	color: #fff;
+	border: 1px solid #41cea9;
+	background-color: #41cea9;
+}
+
+.own-btn-green.mui-active:enabled,
+.own-btn-green:enabled:active {
+	color: #fff;
+	border: 1px solid #41dfa9;
+	background-color: #41dfa9;
+}
+
+.own-font-size {
+	font-size: 1em;
+}
+

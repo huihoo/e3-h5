@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title>父子页面的承载页面</title>
+   	<link rel="stylesheet" type="text/css" href="css/mui.min.css"/>
+   	<link rel="stylesheet" type="text/css" href="css/own.css"/>
+   	<link rel="stylesheet" type="text/css" href="css/iconfont.css"/>
+   	<style type="text/css">
+   		
+   	</style>
+</head>
+<body>
+	
+	
+	<script src="js/mui.min.js" charset="UTF-8"></script>
+	<script src="js/own.js" charset="UTF-8"></script>
+	<script type="text/javascript" charset="UTF-8">		
+		mui.init({
+			swipeBack:false
+		});
+		
+		//通用父子模版页面第一级父子模版页面
+		var headerWebView_First;
+		var subWebView_First;
+		
+		//第二级父子模版页面
+		var headerWebview_Second;
+		var subWebview_Second;
+		
+		//第三级级父子模版页面
+		var headerWebview_Third;
+		var subWebview_Third;
+		mui.plusReady(function(){
+			initThreeTem();
+		});
+		
+		//加载父子页面
+		function initThreeTem(){
+			//初始化第一级父子页面
+			initParentChildTem_First();
+			//初始化第二级父子页面
+			initParentChildTem_Second();
+			//初始化第三级父子页面
+			initParentChildTem_Third();
+			//接收第一级页面的的事件页面切换
+			changeWebViewEvent_first();
+			//接收第二级页面的事件页面切换
+			changeWebViewEvent_Second();
+			//接收第三级页面的事件页面切换
+			changeWebViewEvent_Third();
+		}
+		
+		//初始化第一级父子模版页面
+		function initParentChildTem_First(){
+			headerWebView_First = mui.preload({
+				id:'template-main-first.html',
+				url:'template-main-first.html',
+				styles:{
+					top:'0px',
+					bottom:'0px'
+				},
+				extras:{
+					mtype:'main_first'
+				}
+			});
+			subWebView_First = mui.preload({
+				id:'template-sub-first.html',
+				url:'',
+				styles:{
+					top: '44px',
+					bottom: '0px',
+					bounce: 'vertical',
+					bounceBackground:'#f8f8f8'
+				},
+				extras:{
+					mtype:'sub_first'
+				}
+			});
+			headerWebView_First.hide();
+			subWebView_First.hide();
+			
+			//子页面监听loaded事件
+			subWebView_First.addEventListener('loaded',function(){
+				setTimeout(function(){
+					subWebView_First.show();
+				},100);
+			},false);
+			
+			//父页面隐藏的时候子页面也隐藏
+			headerWebView_First.addEventListener('hide',function(){
+				subWebView_First.hide();
+			},false);
+			
+			headerWebView_First.append(subWebView_First);
+		}
+		
+		//初始化第二级父子页面
+		function initParentChildTem_Second(){
+			headerWebview_Second = mui.preload({
+				id:'template-main-second.html',
+				url:'template-main-second.html',
+				styles:{
+					top:'0px',
+					bottom:'0px'
+				},
+				extras:{
+					mtype:'main_second'
+				}
+			});
+			subWebview_Second = mui.preload({
+				id:'template-sub-second.html',
+				url:'',
+				styles:{
+					top: '44px',
+					bottom: '0px',
+					bounce: 'vertical',
+					bounceBackground:'#f8f8f8'
+				},
+				extras:{
+					mtype:'sub_second'
+				}
+			});
+			headerWebview_Second.hide();
+			subWebview_Second.hide();
+			
+			//子页面监听loaded事件
+			subWebview_Second.addEventListener('loaded',function(){
+				setTimeout(function(){
+					subWebview_Second.show();
+				},100);
+			},false);
+			//父页面隐藏的时候子页面也隐藏
+			headerWebview_Second.addEventListener('hide',function(){
+				subWebview_Second.hide();
+			},false);
+			headerWebview_Second.append(subWebview_Second);
+		}
+		
+		//加载第三级父子页面
+	    	function initParentChildTem_Third(){
+			headerWebview_Third = mui.preload({
+				id:'template-main-third.html',
+				url:'template-main-third.html',
+				styles:{
+					top:'0px',
+					bottom:'0px'
+				},
+				extras:{
+					mtype:'main_third'
+				}
+			});
+			subWebview_Third = mui.preload({
+				id:'template-sub-third.html',
+				url:'',
+				styles:{
+					top: '44px',
+					bottom: '0px',
+					bounce: 'vertical',
+					bounceBackground:'#f8f8f8'
+				},
+				extras:{
+					mtype:'sub_second'
+				}
+			});
+			headerWebview_Third.hide();
+			subWebview_Third.hide();
+			
+			//子页面监听loaded事件
+			subWebview_Third.addEventListener('loaded',function(){
+				setTimeout(function(){
+					subWebview_Third.show();
+				},100);
+			},false);
+			//父页面隐藏的时候子页面也隐藏
+			headerWebview_Third.addEventListener('hide',function(){
+				subWebview_Third.hide();
+			},false);
+			headerWebview_Third.append(subWebview_Third);
+		}
+	    	
+	    		//收到加载第三级父子页面的消息
+		function changeWebViewEvent_Third(){
+			window.addEventListener('newWebview_Third',function(options){
+				logSub(options);				
+				createsubWebview(headerWebview_Third,subWebview_Third,options);
+			},false);
+		}
+		
+		//收到加载第二级父子页面的消息
+		function changeWebViewEvent_Second(){
+			window.addEventListener('newWebview_Second',function(options){
+				logSub(options);				
+				createsubWebview(headerWebview_Second,subWebview_Second,options);
+			},false);
+		}
+		
+		//收到加载父子页面的消息
+		function changeWebViewEvent_first(){
+			window.addEventListener('newWebview_First',function(options){
+				logSub(options);
+				//需要处理特殊的地方，有的页面不用父子模版页面，但是需要预先加载，比如登录页面
+				if (false) {
+					
+				} else if(false){//或则一些其他父子模版页面的特殊处理
+					
+				} else if(~options.detail.id.indexOf('.html')) {
+					if (!~options.detail.id.indexOf('needtem.html')) {//普通不使用父子模版页面的
+						mui.openWindow({
+							url:options.detail.href,
+							id:options.detail.id,
+							styles:{
+								popGesture:'close'
+							},
+							show:{
+								aniShow:options.detail.aniShow
+							},
+							waiting:{
+								autoShow:false
+							}
+						});
+					} else{
+						createsubWebview(headerWebView_First,subWebView_First,options);
+					}
+				}
+			},false);
+		}
+		
+		//输出父子页面元素信息
+		function logSub(options){
+			console.log(options.detail.id);
+			console.log(options.detail.href);
+			console.log(options.detail.aniShow);
+			console.log(options.detail.title);
+			if (options.detail.extendOptions) {
+				console.log(JSON.stringify(options.detail.extendOptions));
+			}
+			console.log('' + ~options.detail.id.indexOf('needtem.html'));
+		}
+		
+		//对不同的父子页面生成
+		function createsubWebview(mainWeb,subWeb,options){
+			//headerWebView.hide();如果在这里添加这个代码，会导致监听事件在下面contentwebview show之后又隐藏掉它
+			subWeb.hide();
+			
+			//像template-main传送事件让他更改标题
+			mui.fire(mainWeb,'templateFire',options.detail);
+			
+			//如果为展示category或者商品信息的页面，需要每次都重新加载，因为存在刷新页面信息的东西;
+			//再次加载页面显示的也是之前加载的页面信息，所以这里，在这个页面返回的时候将里面的数据清空
+			if(mui.os.ios||(mui.os.android&&parseFloat(mui.os.version)<4.4)){
+				var str = subWeb.getURL();
+				var index = str.indexOf('www/');
+				str = str.substring(index+4);
+				if (!~options.detail.id.indexOf('new') &&(subWeb.getURL() == options.detail.href || str == options.detail.href)) {
+					console.log("loaded");
+					subWeb.show();
+				}else {
+					console.log("new load");
+					subWeb.loadURL(options.detail.href);
+				}
+				mainWeb.show(options.detail.aniShow);
+			}
+		}
+	</script>
+</body>
+</html>

@@ -1,49 +1,79 @@
-
-.own-left-nav-color {
-	color: gray;
-}
-
-.own-main-color {
-	color: #41cea9;
-}
-
-.own-gray-color {
-	background-color: #EBEBF1;
-}
-
-.own-black-color {
-	color: black;
-}
-.own-text-through {
-	text-decoration: line-through;
-}
-
-.own-main-background-color {
-	background-color: #41cea9;
-}
-
-.own-header-hidden {
-	display: none!important;
-}
-
-.own-content-padding {
-	padding-top: 0 !important;
-}
-
-.own-btn-green {
-	color: #fff;
-	border: 1px solid #41cea9;
-	background-color: #41cea9;
-}
-
-.own-btn-green.mui-active:enabled,
-.own-btn-green:enabled:active {
-	color: #fff;
-	border: 1px solid #41dfa9;
-	background-color: #41dfa9;
-}
-
-.own-font-size {
-	font-size: 1em;
-}
-
+	.own-left-nav-color {
+		color: gray;
+	}
+	
+	.own-main-color {
+		color: #41cea9;
+	}
+	/*设置背景色*/
+	
+	.own-gray-color {
+		background-color: #f8f8f8;
+	}
+	
+	body {
+		background-color: #F8F8F8;
+	}
+	/*将返回按钮和导航条标题设置为白色*/
+	
+	.mui-icon-back:before,
+	.mui-icon-left-nav:before,
+	.mui-bar-nav .mui-title {
+		color: white;
+	}
+	
+	.own-black-color {
+		color: black;
+	}
+	
+	.own-text-through {
+		text-decoration: line-through;
+	}
+	
+	.own-main-background-color {
+		background-color: #41cea9;
+	}
+	
+	.own-header-hidden {
+		display: none!important;
+	}
+	
+	.own-content-padding {
+		padding-top: 0 !important;
+	}
+	
+	.own-btn-green {
+		color: #fff;
+		border: 1px solid #41cea9;
+		background-color: #41cea9;
+	}
+	
+	.own-btn-green.mui-active:enabled,
+	.own-btn-green:enabled:active {
+		color: #fff;
+		border: 1px solid #41dfa9;
+		background-color: #41dfa9;
+	}
+	
+	.own-font-size {
+		font-size: 1em;
+	}
+	/*父子页面的loader*/
+	
+	.mui-bar .mui-action-back {
+		color: gray;
+	}
+	
+	.loader {
+		position: absolute;
+		top: 25%;
+		width: 100%;
+		height: 60%;
+		color: #888;
+		font-size: 14px;
+		text-align: center;
+	}
+	
+	.mui-content {
+		background-color: #F8F8F8;
+	}

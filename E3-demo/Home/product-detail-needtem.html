@@ -162,7 +162,6 @@
 				detailcontent = document.getElementById('detailcontent');
 				//监听页面隐藏的隐藏的时候清空数据信息
 				currentWebview.addEventListener('hide', function() {
-					//				detailcontent.innerHTML 
 					detail = {};
 				}, false);
 				
@@ -170,7 +169,7 @@
 				mui.fire(paredntWebview,'getExtendOptions',{});
 				//监听返回获取到options数据
 				window.addEventListener('postExtendOptions',function(e){
-//					alert(JSON.stringify(e.detail.extendOptions))
+					console.log(JSON.stringify(e.detail.extendOptions))
 				},false);
 				
 				//初始化一些本地数据

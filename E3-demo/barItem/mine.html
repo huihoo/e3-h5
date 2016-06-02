@@ -131,6 +131,11 @@
 								touxiangword.style.color = 'indianred';
 								localStorage.removeItem('user');
 								mui.toast("退出登录")
+								//发出退出登录给wishlish和cart页面
+								var cartwebview = plus.webview.getWebviewById('barItem/cart.html');
+								var xinyuandanwebview = plus.webview.getWebviewById('barItem/wishList.html');
+								mui.fire(cartwebview,'logout',{});
+								mui.fire(xinyuandanwebview,'logout',{})
 							} else {
 								//取消
 							}

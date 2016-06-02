@@ -1,5 +1,5 @@
 	.own-left-nav-color {
-		color: gray;
+		color: white;
 	}
 	
 	.own-main-color {
@@ -18,7 +18,8 @@
 	
 	.mui-icon-back:before,
 	.mui-icon-left-nav:before,
-	.mui-bar-nav .mui-title {
+	.mui-bar-nav .mui-title,
+	#rightBar:before {
 		color: white;
 	}
 	

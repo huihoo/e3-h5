@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title>E3不是父子模版，考虑其为模态视图</title>
+		<link rel="stylesheet" type="text/css" href="../css/mui.min.css" />
+		<link rel="stylesheet" type="text/css" href="../css/own.css" />
+		<link rel="stylesheet" type="text/css" href="../css/iconfont.css" />
+
+		<style type="text/css">
+			/*下面两项是重置muicss的输入框label和input之间的宽比率*/
+			
+			.mui-input-row label {
+				width: 20%;
+			}
+			
+			.mui-input-row label~input {
+				width: 80%;
+			}
+		</style>
+	</head>
+
+	<body>
+
+		<header class="mui-bar mui-bar-nav own-main-background-color">
+			<button type="button" class="mui-action-back mui-btn  mui-btn-link mui-pull-left own-button">
+			<!--<span class="mui-action-back mui-icon mui-icon-left-nav own-left-nav-color"></span>-->
+			<span class="own-left-nav-color">取消</span>
+		</button>
+			<h1 class="mui-title">登录</h1>
+		</header>
+
+		<div class="mui-content">
+			<div style="margin-top: 30px; text-align: center;">
+				<span class="mui-icon mui-icon-person" style="font-size: 4em; border: 2px solid gray; border-radius: 50%; color: gray;"></span>
+			</div>
+			<div class="mui-card" style="margin-top: 20px;">
+				<form class="mui-input-group">
+					<div class="mui-input-row">
+						<label><span class="mui-icon iconfont icon-zhanghao"></span></label>
+						<input type="text" class="mui-input-clear" value="13881111755" placeholder="请输入手机号或邮箱" />
+					</div>
+					<div class="mui-input-row">
+						<label><span class="mui-icon iconfont icon-mimaxiugai"></span></label>
+						<input type="password" class="mui-input-clear" value="123456" placeholder="请输入密码" />
+					</div>
+				</form>
+			</div>
+			<div class="mui-button-row" style="margin: 10px 15px;">
+				<button id="loginBtn" type="button" class="mui-btn mui-btn-green own-btn-green mui-btn-block " style="padding: 5px 0px;">登录</button>
+			</div>
+			<div class="mui-button-row" style="padding-top: 0px;">
+				<button id="register" type="button" class="mui-btn mui-btn-link own-main-color own-font-size" style="padding-top: 0px; margin-right: 60px; ">快速注册</button>
+				<button id="repsd" type="button" class="mui-btn mui-btn-link own-font-size" style="padding-top: 0px; margin-left: 60px; color: #FF6A6A;">忘记密码</button>
+			</div>
+
+		</div>
+
+		<script src="../js/mui.min.js" charset="UTF-8"></script>
+		<script src="../js/own.js" charset="UTF-8"></script>
+		<script src="../js/ajax.js" charset="UTF-8"></script>
+		<script type="text/javascript" charset="UTF-8">
+			mui.init({
+				swipeBack: true
+			});
+			var account;
+			var psd;
+			var login;
+			var register;
+			var repsd;
+			var loginWebview;
+			mui.plusReady(function() {
+				account = document.querySelector('input[type="text"]');
+				psd = document.querySelector('input[type="password"]');
+				login = document.getElementById('loginBtn');
+				register = document.getElementById('register');
+				repsd = document.getElementById('repsd');
+				loginWebview = plus.webview.currentWebview();
+				//检测本地的登录过的账号。
+				if (localStorage.getItem('account')) {
+					account.value = localStorage.getItem('account');
+				}
+				//登陆的点击事件
+				login.addEventListener('tap', function() {
+					//将两个数据存放起来，第一个是等出之后删除，第二个只要登录之后就会记录保存
+					localStorage.setItem('user', {});
+					mui.back();
+					mui.toast('登录成功');
+					//添加事件接收close事件，并且要判断是否已经登录成功，然后页面close，因为login页面是预先加载的页面
+					//在这里向需要的页面发送消息事件通知已经登录做响应的处理
+					loginWebview.addEventListener('hide', function() {
+						mui.each(plus.webview.all(), function(index, item) {
+							console.log(item.id)
+						})
+						var cartwebview = plus.webview.getWebviewById('barItem/cart.html');
+						var minewebview = plus.webview.getWebviewById('barItem/mine.html');
+						var xinyuandanwebview = plus.webview.getWebviewById('barItem/wishList.html');
+						mui.fire(cartwebview, 'loginSuccess', {});
+						mui.fire(minewebview, 'loginSuccess', {});
+						mui.fire(xinyuandanwebview, 'loginSuccess', {});
+						loginWebview.close();
+					}, false);
+				}, false);
+				//注册按钮的点击事件
+				register.addEventListener('tap', function() {
+					pushWebView({
+						webType: 'newWebview_First',
+						id: 'mine/register-needtem.html',
+						href: 'mine/register-needtem.html',
+						aniShow: getaniShow(),
+						title: "注册",
+						isBars: false,
+						barsIcon: '',
+						extendOptions: {}
+					})
+				}, false);
+				//注册按钮的点击事件
+				repsd.addEventListener('tap', function() {
+					pushWebView({
+						webType: 'newWebview_First',
+						id: 'mine/forget-psd-needtem.html',
+						href: 'mine/forget-psd-needtem.html',
+						aniShow: getaniShow(),
+						title: "注册",
+						isBars: false,
+						barsIcon: '',
+						extendOptions: {}
+					})
+				}, false);
+			});
+		</script>
+	</body>
+
+</html>

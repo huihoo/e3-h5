@@ -1,14 +1,193 @@
 <!DOCTYPE html>
 <html>
+
 	<head>
 		<meta charset="UTF-8">
-		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title>Mine</title>
+		<link href="../css/mui.min.css" rel="stylesheet" />
+		<link rel="stylesheet" type="text/css" href="../css/iconfont.css" />
+		<link rel="stylesheet" type="text/css" href="../css/own.css" />
+		<style type="text/css">
+			.headImg {
+				padding: 8% 0px 13% 0px;
+				background: url(../img/bg.jpeg);
+				background-position: center center;
+				background-size: 100% auto;
+			}
+			
+			.touxiang {
+				text-align: center;
+			}
+			
+			.touxiang div {
+				width: 4em;
+				height: 4em;
+				padding: 0px;
+				border-radius: 50%;
+				border: 2px solid white;
+				color: gray;
+				margin: 0px auto;
+				margin-bottom: 5px;
+			}
+		</style>
 	</head>
-	<style type="text/css">
-		body{
-			background-color: pink;
-		}
-	</style>
+
 	<body>
+		<div class="mui-content">
+
+			<div class="headImg">
+				<div class="touxiang">
+					<div>
+						<span id="touxiangimg" class="mui-icon mui-icon-person" style="font-size: 3.8em; color: white;"></span>
+						<img id="trueimg" src="../img/bg.jpeg" style="width: 100%; height: 100%; border-radius: 50%;" />
+					</div>
+					<span id="touxiangword">请登录</span>
+				</div>
+			</div>
+
+			<ul class="mui-table-view" style="margin-top: 10px;">
+				<li class="mui-table-view-cell">
+					<a class="mui-navigate-right" href="../mine/my-order-needtem.html">
+						<span class="mui-icon iconfont icon-wodedingdan"></span> 我的订单
+					</a>
+				</li>
+				<li class="mui-table-view-cell">
+					<a id="changeaddress" class="mui-navigate-right" href="../mine/change-address-needtem.html">
+						<span class="mui-icon iconfont icon-dizhi"></span> 修改地址
+					</a>
+				</li>
+			</ul>
+			<ul class="mui-table-view" style="margin-top: 20px;">
+				<li class="mui-table-view-cell">
+					<a class="mui-navigate-right" href="../mine/change-email-needtem.html">
+						<span class="mui-icon mui-icon-email"></span> 修改邮箱
+					</a>
+				</li>
+				<li class="mui-table-view-cell">
+					<a class="mui-navigate-right" href="../mine/change-psd-needtem.html">
+						<span class="mui-icon mui-icon-locked"></span> 修改密码
+					</a>
+				</li>
+			</ul>
+			<ul class="mui-table-view" style="margin-top: 20px;">
+				<li class="mui-table-view-cell">
+					<a class="mui-navigate-right" href="../mine/feedback-needtem.html">
+						<span class="mui-icon iconfont icon-xiaolian"></span> 用户反馈
+					</a>
+				</li>
+			</ul>
+
+			<ul id="logoutBtn" class="mui-table-view" style="margin-top: 20px;margin-bottom: 20px;">
+				<li class="mui-table-view-cell" style="text-align: center;">
+					<span style="color: indianred;">退出登录</span>
+				</li>
+			</ul>
+
+		</div>
+		<script type="text/javascript" src="../js/mui.min.js"></script>
+		<script type="text/javascript" src="../js/own.js"></script>
+		<script type="text/javascript" charset="UTF-8">
+			mui.init({
+				swipeBack: false
+			});
+			var parentWebView;
+			var touxiangimg;
+			var logoutBtn;
+			var trueimg;
+			var touxiangword;
+			mui.plusReady(function() {
+					parentWebView = plus.webview.currentWebview().parent();
+					touxiangimg = document.getElementById('touxiangimg');
+					logoutBtn = document.getElementById('logoutBtn');
+					trueimg = document.getElementById('trueimg');
+					touxiangword = document.getElementById('touxiangword');
+					//检测是否已经登录
+					trueimg.style.display = 'none';
+					logoutBtn.style.display = 'none'
+					touxiangimg.style.display = 'inline'
+					touxiangword.style.color = 'indianred'
+						//注册列表的点击事件
+					addListevent();
+					//点击头像事件
+					addHeadevent();
+					//接收登录成功事件
+					window.addEventListener('loginSuccess', function() {
+						//登出按钮显示出来 头像图片显示出来名字显示出来
+						logoutBtn.style.display = 'block';
+						touxiangimg.style.display = 'none';
+						trueimg.style.display = 'inline';
+						touxiangword.innerText = "测试号";
+						touxiangword.style.color = 'black';
+					}, false);
+					logoutBtn.addEventListener('tap', function() {
+						var btnArray = ['否', '是'];
+						mui.confirm('确认要退出登录吗？', 'Hello MUI', btnArray, function(e) {
+							if (e.index == 1) {
+								//确定
+								trueimg.style.display = 'none';
+								logoutBtn.style.display = 'none';
+								touxiangimg.style.display = 'inline';
+								touxiangword.style.color = 'indianred';
+								localStorage.removeItem('user');
+								mui.toast("退出登录")
+							} else {
+								//取消
+							}
+						});
+					}, false)
+				})
+				//点击头像事件
+			function addHeadevent() {
+				//点击头像登录
+				touxiangimg.addEventListener('tap', function() {
+					if (!localStorage.getItem('user')) {
+						pushWebView({
+							webType: 'newWebview_First',
+							id: 'mine/login.html',
+							href: 'mine/login.html',
+							aniShow: getaniShow(),
+							title: "登录",
+							isBars: false,
+							barsIcon: '',
+							extendOptions: {}
+						})
+					}
+				}, false);
+			}
+			//注册列表的点击事件
+			function addListevent() {
+				mui('.mui-table-view').on('tap', 'a', function() {
+					var id = this.getAttribute('href');
+					var href = this.href;
+					var title = this.innerText;
+					var isBars = false;
+					var barsIcon = '';
+					var aniShow = getaniShow();
+					//检测已经存在sessionkey否者运行下面的登陆代码
+					if (localStorage.getItem('user')) {} else {
+						href = "mine/login.html";
+						id = "mine/login.html";
+						aniShow = 'slide-in-bottom';
+						title = '登录';
+					}
+					if (this.id == 'changeaddress') {
+						isBars = true;
+						barsIcon = 'mui-icon iconfont icon-tianjia';
+					}
+					pushWebView({
+						webType: 'newWebview_First',
+						id: id,
+						href: href,
+						aniShow: aniShow,
+						title: title,
+						isBars: isBars,
+						barsIcon: barsIcon,
+						extendOptions: {}
+					})
+				});
+			}
+		</script>
 	</body>
+
 </html>

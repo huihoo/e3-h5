@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title>E3为父子模版可直接用index的父子模版</title>
+    <link rel="stylesheet" type="text/css" href="../css/mui.min.css"/>
+    <link rel="stylesheet" type="text/css" href="../css/own.css"/>
+    <link rel="stylesheet" type="text/css" href="../css/iconfont.css"/>
+    
+    <style type="text/css">
+    		.mui-input-row label {
+    			width: 20%;
+    		}
+    		.mui-input-row label~input {
+    			width: 80%;
+    		}
+    </style>
+</head>
+<body>
+	
+	<header class="mui-bar mui-bar-nav own-header-hidden">
+		<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+		<h1 class="mui-title">修改密码</h1>
+	</header>
+	
+	<div class="mui-content own-content-padding">
+		<div class="mui-card" style="margin-top: 30px;">
+			<form class="mui-input-group">
+				<div class="mui-input-row">
+					<label><span class="mui-icon iconfont icon-jiumima"></span></label>
+					<input type="password" class="mui-input-clear" placeholder="旧密码" />
+				</div>
+				<div class="mui-input-row">
+					<label><span class="mui-icon iconfont icon-mimaxiugai"></span></label>
+					<input type="password" class="mui-input-clear" placeholder="新密码" />
+				</div>
+				<div class="mui-input-row">
+					<label><span class="mui-icon iconfont icon-queren"></span></label>
+					<input type="password" class="mui-input-clear" placeholder="确认新密码" />
+				</div>
+			</form>
+		</div>
+		<div class="mui-button-row" style="margin: 10px 15px;">
+			<button type="button" class="mui-btn mui-btn-link own-btn-green mui-btn-block" style="padding: 5px 0px;">修改密码</button>
+		</div>
+	</div>
+	
+	<script src="../js/mui.min.js" charset="UTF-8"></script>
+	<script src="../js/own.js" charset="UTF-8"></script>
+	<script src="../js/ajax.js" charset="UTF-8"></script>
+	<script type="text/javascript" charset="UTF-8">
+		mui.init({
+			swipeBack:true
+		});
+		
+		var inputList;
+		var changepwdWebview;
+		mui.plusReady(function(){
+			//选出所有input
+			inputList = document.querySelectorAll('input[type="password"]');
+			changepwdWebview = plus.webview.currentWebview();
+			
+			document.querySelector('button[type="button"]').addEventListener('tap',function(){
+				for (var i = 0;i < inputList.length; i++) {
+					if (inputList[i].value.length <= 0) {
+						var alertMSG;
+						if (i == 0) {
+							alertMSG = '请输入旧密码';
+						} else if(i == 1){
+							alertMSG = '请输入新密码';
+						}else if(i == 2 ) {
+							alertMSG = '两次输入密码必须一致';
+						}
+						mui.toast(alertMSG);
+						return;
+					}
+				}
+				if (inputList[1].value != inputList[2].value) {
+					mui.toast('两次输入密码必须一致');
+					return;
+				}
+				
+				//开始执行修改密码联网
+				ajax_change_pwd({
+					confirm_pwd:inputList[2].value,
+					new_pwd:inputList[1].value,
+					old_pwd:inputList[0].value
+				});
+				
+				
+				
+				
+			},false);
+			
+			//为页面添加事件监听hide
+			changepwdWebview.addEventListener('hide',function(){
+				//将所有的之前输入过的密码全部清空
+				mui.each(inputList,function(index,item){
+					item.value = '';
+				});
+			},false);
+			
+		});
+		
+		//密码修改返回函数
+		function changePwdSuccess(data){
+			if (data.code == '000000') {
+				//成功修改
+				//删除本地user信息
+				//将页面返回显示修改成功需要从新登陆
+				localStorage.removeItem('user');
+				mui.toast('修改成功，需要重新登录');
+				mui.back();
+			}
+		}
+	</script>
+	
+</body>
+</html>

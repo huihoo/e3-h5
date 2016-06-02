@@ -76,7 +76,9 @@
 					}
 					//导航右按键监听
 					rightBar.addEventListener('tap', function() {
-						alert('jinlaileme dianji');
+						if (!contentWebview) {
+							contentWebview = self.children()[0];
+						}
 						mui.fire(contentWebview, 'navRightPress', {});
 					}, false);
 				}, false);

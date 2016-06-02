@@ -201,8 +201,25 @@
 			window.addEventListener('newWebview_First',function(options){
 				logSub(options);
 				//需要处理特殊的地方，有的页面不用父子模版页面，但是需要预先加载，比如登录页面
-				if (false) {
-					
+				if (options.detail.id == 'mine/login.html' ) {
+					//如果存在直接显示，如果不存在就生成
+					var loginWebView = plus.webview.getWebviewById("mine/login.html");
+					if (loginWebView) {
+						loginWebView.show('slide-in-bottom');
+					}else {
+						//这个条件下面是为了适应当登录页面并没有初始化，或者初始化之后用户又已经登录了这个页面被删除之后再次登录
+						loginWebView = mui.preload({
+							url:'mine/login.html',
+							id:'mine/login.html',
+							styles:{
+								top:'0px',
+								bottom:'0px'
+							}
+						});
+						loginWebView.addEventListener('loaded',function(){
+							loginWebView.show('slide-in-bottom');
+						},false);
+					}
 				} else if(false){//或则一些其他父子模版页面的特殊处理
 					
 				} else if(~options.detail.id.indexOf('.html')) {

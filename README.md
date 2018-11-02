@@ -6,8 +6,6 @@
 
 灰狐E3 http://e3.huihoo.com
 
-[E3 HTML5 App @ Huihoo code](http://code.huihoo.com/mobile-development/e3_h5)
-
 #### 版本
 * 单机版(E3-demo)：用于评估和测试 (2016.06-)
 * 服务器版(E3-server)：用于生产部署 (2016.07-)
